@@ -1,0 +1,11 @@
+Noise Level in Testing/Validation Set,Validation Accuracy (%),Network
+0,71,"Robust (new regularizer, retrained clean readout)"
+1,54,"Robust (new regularizer, retrained clean readout)"
+2,32,"Robust (new regularizer, retrained clean readout)"
+5,5,"Robust (new regularizer, retrained clean readout)"
+10,3,"Robust (new regularizer, retrained clean readout)"
+0,71,"Robust (new regularizer, retrained noisy readout)"
+1,54,"Robust (new regularizer, retrained noisy readout)"
+2,32,"Robust (new regularizer, retrained noisy readout)"
+5,5,"Robust (new regularizer, retrained noisy readout)"
+10,3,"Robust (new regularizer, retrained noisy readout)"

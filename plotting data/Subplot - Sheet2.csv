@@ -1,0 +1,11 @@
+Noise Level,Accuracy,Network
+0,65,Robust Unregularized
+1,62,Robust Unregularized
+2,54,Robust Unregularized
+5,23,Robust Unregularized
+10,11,Robust Unregularized
+0,71,Similarity Matching Regularized
+1,15,Similarity Matching Regularized
+2,2,Similarity Matching Regularized
+5,1,Similarity Matching Regularized
+10,1,Similarity Matching Regularized

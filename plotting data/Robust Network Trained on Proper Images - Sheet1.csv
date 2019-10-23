@@ -1,0 +1,11 @@
+Noise Level,Accuracy,Readout Type
+0,69,noise-augmented readout
+1,55,noise-augmented readout
+2,32,noise-augmented readout
+5,12,noise-augmented readout
+10,5,noise-augmented readout
+0,69,clean readout
+1,55,clean readout
+2,32,clean readout
+5,12,clean readout
+10,5,clean readout
