@@ -104,7 +104,7 @@ ENV/
 .mypy_cache/
 
 # Torch
-*.t7
+#*.t7
 
 # Data
 data/

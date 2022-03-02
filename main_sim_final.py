@@ -1,5 +1,5 @@
 from __future__ import print_function
-from IPython.core.debugger import set_trace
+from pdb import set_trace
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -40,17 +40,17 @@ print('\n[Phase 1] : Data Preparation')
 torch.manual_seed(2809)
 gaussian_transforms = [
     transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=0)),
-    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=0.1)),
-    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=0.2)),
-    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=0.5)),
-    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=1.0))
+    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=1)),
+    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=2)),
+    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=5)),
+    transforms.Lambda(lambda x: ndimage.gaussian_filter(x, sigma=10))
     ]
 transform_train_noise = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.RandomChoice(gaussian_transforms),
+    transforms.RandomChoice(gaussian_transforms)
     #transforms.ToTensor()
 ])
     
@@ -58,13 +58,13 @@ transform_train_clean = transforms.Compose([
     transforms.RandomCrop(32, padding=4),
     transforms.RandomHorizontalFlip(),
     transforms.ToTensor(),
-    transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
+    transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100'])
 ]) # meanstd transformation
     
 transform_test_noise = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.RandomChoice(gaussian_transforms),
+    transforms.RandomChoice(gaussian_transforms)
     #transforms.ToTensor()
 
 ])
@@ -72,41 +72,41 @@ transform_test_noise = transforms.Compose([
 transform_test_noise_0 = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=0)),
+    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=0))
     #transforms.ToTensor()
 ])
 
 transform_test_noise_1 = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=0.1)),
+    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=1))
     #transforms.ToTensor()
 ])
 
 transform_test_noise_2 = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=0.2)),
+    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=2))
     #transforms.ToTensor()
 ])
 
 transform_test_noise_5 = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=0.5)),
+    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=5))
     #transforms.ToTensor()
 ])
 
 transform_test_noise_10 = transforms.Compose([
     transforms.ToTensor(),
     transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
-    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=1.0)),
+    transforms.Lambda(lambda x:ndimage.gaussian_filter(x, sigma=10))
     #transforms.ToTensor()
 ])
 
 transform_test = transforms.Compose([
     transforms.ToTensor(),
-    transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100']),
+    transforms.Normalize(cf.mean['cifar100'], cf.std['cifar100'])
 ])
 
 print("| Preparing CIFAR-100 dataset...")
@@ -152,7 +152,8 @@ if (args.testOnly):
     print('\n[Test Phase] : Model setup')
     assert os.path.isdir('checkpoint'), 'Error: No checkpoint directory found!'
     _, file_name = getNetwork(args)
-    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'_similarity_regularized_layerwiseRegStrength_lambda20.0_eta0.02_SNRnormalized.t7')
+    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'_similarity_regularized_allLayers_layerwiseRegStrength_lambda20_eta0.02.t7')
+    #set_trace()
     net = checkpoint['net']
     
     if use_cuda:
@@ -279,7 +280,7 @@ criterion = nn.CrossEntropyLoss()
 
 if (sim_learning):
     print('| Loading Regularizer Network...')
-    checkpoint_gauss = torch.load("./checkpoint/cifar100/resnet-50_readout_match_SNRNormalized.t7")
+    checkpoint_gauss = torch.load("./checkpoint/cifar100/resnet-50_readout_matchrobust_SNRNormalized.t7")
     robustNet = checkpoint_gauss['net']
     robustNet = torch.nn.DataParallel(robustNet, device_ids=[0])
 # Similarity Loss Computation

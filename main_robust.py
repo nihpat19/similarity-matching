@@ -20,7 +20,7 @@ from networks import *
 from torch.autograd import Variable
 from itertools import starmap
 import random
-parser = argparse.ArgumentParser(description='PyTorch CIFAR-10 Training')
+parser = argparse.ArgumentParser(description='Robust Neural Network Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning_rate')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 parser.add_argument('--testOnly', '-t', action='store_true', help='Test mode with the saved model')
@@ -95,7 +95,7 @@ if (args.testOnly):
     print('\n[Test Phase] : Model setup')
     assert os.path.isdir('checkpoint'), 'Error: No checkpoint directory found!'
     _, file_name = getNetwork(args)
-    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'_readout_match_SNRNormalized.t7')
+    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'robust_readout_matching_moddedNormalize.t7')
     net = checkpoint['net']
 
     if use_cuda:
@@ -148,7 +148,7 @@ if args.resume:
     print('| Resuming from checkpoint...')
     assert os.path.isdir('checkpoint'), 'Error: No checkpoint directory found!'
     _, file_name = getNetwork(args)
-    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'readout_matching_properTransform.t7')
+    checkpoint = torch.load('./checkpoint/'+'cifar100'+os.sep+file_name+'_readout_matchrobust_SNRNormalized.t7')
     net = checkpoint['net']
     if len(checkpoint)>1:  
         start_epoch = checkpoint['epoch']
@@ -163,7 +163,7 @@ else:
 
 if use_cuda:
     net.cuda()
-    net = torch.nn.DataParallel(net, device_ids=range(torch.cuda.device_count()))
+    #net = torch.nn.DataParallel(net, device_ids=range(torch.cuda.device_count()))
     cudnn.benchmark = True
 criterion = nn.CrossEntropyLoss()
 w_loss = nn.MSELoss()
@@ -263,7 +263,7 @@ def test(epoch):
         save_point = './checkpoint/'+'cifar100'+os.sep
         if not os.path.isdir(save_point):
             os.mkdir(save_point)
-        torch.save(state, save_point+file_name+'_readout_match_SNRNormalized.t7')
+        torch.save(state, save_point+file_name+'_robust.t7')
         best_acc = acc
     #accs.append(acc)
     #net.train()

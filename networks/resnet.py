@@ -6,7 +6,7 @@ from torch.autograd import Variable
 import sys
 import torch.nn.init as init
 import numpy as np
-from IPython.core.debugger import set_trace
+from pdb import set_trace
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride, padding=1, bias=True)
@@ -101,9 +101,6 @@ class Bottleneck(nn.Module):
             )
     def get_similarity_matrix(self, x): #Compute correlation similarity matrix over image batch
         x = x.view(x.shape[0],-1)
-#         x_f = x.detach().cpu().numpy()
-#         xm = x_f.mean(axis=1, keepdims=True)
-#         xsd = x_f.std(axis=1, keepdims=True)
         snr = x.mean(dim=1, keepdim=True)/x.std(dim=1, keepdim=True)
         x = snr*x
         x_s = (x-x.mean(dim=1, keepdim=True))/x.std(dim=1,keepdim=True)
@@ -112,19 +109,10 @@ class Bottleneck(nn.Module):
     
     def forward(self, x):
         
-### For Regularization Every 10th Layer
-#         out = self.conv1(x)
-#         out = F.relu(self.bn1(out))
-#         out = self.conv2(out)
-#         out = F.relu(self.bn2(out))
-#         out = self.conv3(out)
-#         out = self.bn3(out)
-#         out+=self.shortcut(x)
-#         out = F.relu(out)
-#         return out
 
 
 ### For Regularization Every Layer
+        #set_trace()
         (x, S)=x
         out = self.conv1(x)
         s1_x = self.get_similarity_matrix(out)
@@ -182,7 +170,8 @@ class ResNet(nn.Module):
     def forward(self, x, compute_similarity=False):
         S = []
         out = self.conv1(x)
-        S.append(self.get_similarity_matrix(out))
+        if compute_similarity:
+            S.append(self.get_similarity_matrix(out))
         out = F.relu(self.bn1(out))
         if compute_similarity:
             out, S = self.layer1((out, S))
@@ -194,6 +183,7 @@ class ResNet(nn.Module):
             
             return (out, torch.stack(S))
         else:
+
             out, _ = self.layer1((out, S))
             out, _ = self.layer2((out, S))
             out, _ = self.layer3((out, S))
@@ -242,92 +232,6 @@ class ResNet_2Read(nn.Module):
         S.append(self.get_similarity_matrix(out))
         out = F.relu(self.bn1(out))
         if(compute_similarity):
-### For Regularization at Every 10th Layer (with Skip Connections)        
-# #             out_s1 = out
-# #             out = F.relu(self.layer1[0].bn1(self.layer1[0].conv1(out)))
-# #             out = F.relu(self.layer1[0].bn2(self.layer1[0].conv2(out)))
-# #             out = self.layer1[0].bn3(self.layer1[0].conv3(out))
-# #             out_s1 = self.layer1[0].shortcut[0](out_s1)
-# # #             sSkip1 = self.get_similarity_matrix(out_s1)
-# #             out_s1 = self.layer1[0].shortcut[1](out_s1)
-# #             out+=out_s1
-# #             out = F.relu(out)
-                         
-                         
-#             out = self.layer1[:2](out)
-#             out_1 = out
-#             out = F.relu(self.layer1[2].bn1(self.layer1[2].conv1(out)))
-#             out = F.relu(self.layer1[2].bn2(self.layer1[2].conv2(out)))
-#             out = self.layer1[2].conv3(out)
-#             s10_x = self.get_similarity_matrix(out)
-#             out = self.layer1[2].bn3(out)
-#             out+=self.layer1[2].shortcut(out_1)
-#             out = F.relu(out)
-            
-# #             out_s2 = out
-# #             out = F.relu(self.layer2[0].bn1(self.layer2[0].conv1(out)))
-# #             out = F.relu(self.layer2[0].bn2(self.layer2[0].conv2(out)))
-# #             out = self.layer2[0].bn3(self.layer2[0].conv3(out))
-# #             out_s2 = self.layer2[0].shortcut[0](out_s2)
-# # #             sSkip2 = self.get_similarity_matrix(out_s2)
-# #             out_s2 = self.layer2[0].shortcut[1](out_s2)
-# #             out+=out_s2
-# #             out = F.relu(out)           
-                         
-            
-#             out = self.layer2[:3](out)
-#             out_2 = out
-#             out = self.layer2[3].conv1(out)
-#             s20_x = self.get_similarity_matrix(out)
-#             out = F.relu(self.layer2[3].bn1(out))
-#             out = self.layer2[3].conv2(out)
-# #             #s21_x = self.get_similarity_matrix(out)
-#             out = F.relu(self.layer2[3].bn2(out))
-#             out = self.layer2[3].bn3(self.layer2[3].conv3(out))
-#             out += self.layer2[3].shortcut(out_2)
-#             out = F.relu(out)
-
-# #             out_s3 = out
-# #             out = F.relu(self.layer3[0].bn1(self.layer3[0].conv1(out)))
-# #             out = F.relu(self.layer3[0].bn2(self.layer3[0].conv2(out)))
-# #             out = self.layer3[0].bn3(self.layer3[0].conv3(out))
-# #             out_s3 = self.layer3[0].shortcut[0](out_s3)
-# # #             sSkip3 = self.get_similarity_matrix(out_s3)
-# #             out_s3 = self.layer3[0].shortcut[1](out_s3)
-# #             out+=out_s3
-# #             out = F.relu(out)
-                         
-#             out = self.layer3[:2](out)
-#             out_3 = out
-#             out = F.relu(self.layer3[2].bn1((self.layer3[2].conv1(out))))
-#             out = self.layer3[2].conv2(out)
-#             s30_x = self.get_similarity_matrix(out)
-#             out = F.relu(self.layer3[2].bn2(out))
-#             out = self.layer3[2].bn3(self.layer3[2].conv3(out))
-#             out += self.layer3[2].shortcut(out_3)
-#             out = F.relu(out)
-            
-#             out = self.layer3[3:5](out)
-#             out_4 = out
-#             out = self.layer3[5].conv1(out)
-# #             #s38_x = self.get_similarity_matrix(out)
-#             out = F.relu(self.layer3[5].bn1(out))
-#             out = F.relu(self.layer3[5].bn2((self.layer3[5].conv2(out))))
-#             out = self.layer3[5].conv3(out)
-#             s40_x = self.get_similarity_matrix(out)
-#             out = self.layer3[5].bn3(out)
-#             out += self.layer3[5].shortcut(out_4)
-#             out = F.relu(out)
-#             out = F.avg_pool2d(out, 8)
-#             out = out.view(out.size(0),-1)
-                         
-#             S = [ s10_x, s20_x, s30_x, s40_x]
-
-#             if(img_type=="clean"):
-#                 out = self.linear_clean(out)
-#             elif(img_type=="noise"):
-#                 out = self.linear_noise(out)
-#             return (out, S)
         
         
 
@@ -404,6 +308,7 @@ class Bottleneck_Original(nn.Module):
 #             out = F.relu(out) 
 #             return (out, S+[s1_x, s2_x, s3_x])  
         return out
+"""
 class ResNet_Original(nn.Module):
     def __init__(self, depth, num_classes):
         super(ResNet_Original, self).__init__()
@@ -533,9 +438,9 @@ class ResNet_Original(nn.Module):
             return out
 
         
-        
+"""
         
 if __name__ == '__main__':
     net=ResNet(50, 10)
-    y = net(Variable(torch.randn(1,3,32,32)))
+    y = net(torch.randn(1,3,32,32))
     print(y.size())
