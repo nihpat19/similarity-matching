@@ -15,7 +15,7 @@ if args.net=="student":
 	else:
 		reg = "start_string"
 		while not reg in ['y','n']:
-			reg = str(input("Regularize Training? (Y/N): ")).lower().strip()
+			reg = str(input("Regularize Training using Feature Similarity Matching? (Y/N): ")).lower().strip()
 		if reg=='y':
 			lmb = 1
 			while not lmb > 1:
@@ -26,10 +26,16 @@ if args.net=="student":
 					eta = float(input("Enter Eta Regularization Constant (Must be greater than 0 and less than 1): ").strip())
 				if 0<eta<1:
 					if args.lr != 0.1:
-						subprocess.call(['python3','main_sim_final.py','--sim'])
+						subprocess.call(['python3','main_sim_final.py','--lr',str(args.lr),'-s','-lb',str(lmb), '-e',str(eta)])
 					else:
-						subprocess.call(['python3','main_sim_final.py','--sim'])
-		else:
+						subprocess.call(['python3','main_sim_final.py','--s','-lb',str(lmb), '-e',str(eta)])
+        else:
+            subprocess.call(['python3','main_sim_final.py'])
+else:
+    if args.lr != 0.1:
+        subprocess.call(['python3','main_robust.py', '--lr', str(args.lr)])
+    else:
+        subprocess.call(['python3','main_robust.py'])
 			
 			
 	
